@@ -1,6 +1,7 @@
 from getpass import getpass
 from passwordgenerator import pwgenerator
 from encdec import encrypt_AES_GCM, decrypt_AES_GCM
+from set_new_master_pass import set_new_master_password
 import sqlite3
 from datetime import datetime
 import pyperclip
@@ -29,8 +30,8 @@ def menu(mpp):
     if choice == "3":
         update_pass(mpp)
 
-    # if choice == "m":
-    #     update_master_pass(mpp)
+    if choice == "m":
+        update_master_pass()
 
     else:
         quit()
@@ -132,3 +133,8 @@ def update_pass(mpp):
 
     con.commit()
     menu(mpp)
+
+def update_master_pass():
+    new_master_pass = getpass("enter new master password: ").encode("utf-8")
+    set_new_master_password(new_master_pass)
+    print("master password changed, login again")
