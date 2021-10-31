@@ -9,7 +9,7 @@ from colors import colors
 from encdec import decrypt_AES_GCM, encrypt_AES_GCM
 from set_new_master_pass import set_new_master_password
 
-con = sqlite3.connect("../data/pws.db", detect_types=sqlite3.PARSE_DECLTYPES)
+con = sqlite3.connect("/pws.db", detect_types=sqlite3.PARSE_DECLTYPES)
 cur = con.cursor()
 
 
