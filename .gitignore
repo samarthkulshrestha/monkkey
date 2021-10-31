@@ -1,4 +1,6 @@
+data/pws.db
+src/__pycache__
+src/master.txt
+Pipfile
 Pipfile.lock
-pws.db
-__pycache__
 Session.vim

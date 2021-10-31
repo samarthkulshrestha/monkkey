@@ -1,5 +1,8 @@
+import binascii
+import os
+
+import scrypt
 from Crypto.Cipher import AES
-import scrypt, os, binascii
 
 
 def encrypt_AES_GCM(msg, password):
