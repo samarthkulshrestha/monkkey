@@ -1,4 +1,4 @@
-.Pipfile
-.Pipfile.lock
+Pipfile
+Pipfile.lock
 monkkey/__pycache__/
 pws.db
