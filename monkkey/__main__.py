@@ -34,8 +34,7 @@ try:
         quit()
 
     print(
-        f"""{colors.OKBLUE}welcome! type 'h' or 'help' and
-        press enter for a help message{colors.ENDC}"""
+        f"""{colors.OKBLUE}welcome! type 'h' or 'help' and press enter for a help message{colors.ENDC}"""
     )
     menu(mpp)
 except IOError:

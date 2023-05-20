@@ -1,8 +1,8 @@
-import mysql.connector as sqlcon
 from datetime import datetime
 from getpass import getpass
 
 import pyperclip
+import sqlite3 as sql
 from passwordgenerator import pwgenerator
 
 from colors import colors
@@ -11,12 +11,7 @@ from encdec import (
     encrypt_AES_GCM,
 )
 
-con = sqlcon.connect(
-    host="localhost",
-    user="root",
-    passwd="1234",
-    database="pw_manager",
-)
+con = sql.connect("pws.db")
 cur = con.cursor()
 
 
@@ -51,15 +46,20 @@ def menu(mpp):
 
 
 def init_db(mpp):
-    cur.execute(
-        """CREATE TABLE passwords (service_name text UNIQUE, service_url text
-                                   UNIQUE, identifier text, kdf_salt blob,
-                                   ciphertext blob, nonce blob, auth_tag blob,
-                                   created_at date);"""
-    )
-    print(
-        f"{colors.OKGREEN}database initialized{colors.ENDC}"
-    )
+    try:
+        cur.execute(
+            """CREATE TABLE passwords (service_name text UNIQUE, service_url text
+                                       UNIQUE, identifier text, kdf_salt blob,
+                                       ciphertext blob, nonce blob, auth_tag blob,
+                                       created_at date);"""
+        )
+        print(
+            f"{colors.OKGREEN}database initialized{colors.ENDC}"
+        )
+    except sql.OperationalError:
+        print(
+            f"""{colors.WARNING}database has been initialized already.{colors.ENDC}"""
+        )
 
     menu(mpp)
 
@@ -124,7 +124,7 @@ def create_pass(mpp):
 
     try:
         cur.execute(
-            "INSERT INTO passwords VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+            "INSERT INTO passwords VALUES (?,?,?,?,?,?,?,?)",
             (
                 service_name,
                 service_url,
@@ -139,7 +139,7 @@ def create_pass(mpp):
 
         con.commit()
 
-    except sqlcon.errors.IntegrityError:
+    except sql.IntegrityError:
         print(
             f"""{colors.WARNING}a record for the entered service already exists,
             use the help command for help{colors.ENDC}"""
@@ -156,10 +156,10 @@ def read_pass(mpp):
     try:
         cur.execute(
             """SELECT kdf_salt, ciphertext, nonce, auth_tag FROM passwords WHERE
-            service_name=(%s)""",
+            service_name=(?)""",
             (service_name,),
         )
-    except sqlcon.errors.OperationalError:
+    except sql.OperationalError:
         print(
             f"""{colors.WARNING}database is not initialized yet,
             use the init command to do so{colors.ENDC}"""
@@ -234,7 +234,7 @@ def update_pass(mpp):
 
     cur.execute(
         """SELECT kdf_salt, ciphertext, nonce, auth_tag FROM passwords WHERE
-        service_name=(%s)""",
+        service_name=(?)""",
         (service_name,),
     )
     acc = cur.fetchone()
@@ -250,8 +250,8 @@ def update_pass(mpp):
         auth_tag = enc_password[3]
 
         cur.execute(
-            """UPDATE passwords SET kdf_salt=%s ,ciphertext=%s, nonce=%s,
-            auth_tag=%s, created_at=%s WHERE service_name=%s """,
+            """UPDATE passwords SET kdf_salt=? ,ciphertext=?, nonce=?,
+            auth_tag=?, created_at=? WHERE service_name=? """,
             (
                 kdf_salt,
                 ciphertext,
@@ -277,7 +277,7 @@ def get_info(mpp):
     )
 
     cur.execute(
-        "SELECT identifier, service_url FROM passwords WHERE service_name=(%s)",
+        "SELECT identifier, service_url FROM passwords WHERE service_name=(?)",
         (service_name,),
     )
     data = cur.fetchone()
