@@ -2,3 +2,4 @@ Pipfile
 Pipfile.lock
 monkkey/__pycache__/
 pws.db
+master.txt
