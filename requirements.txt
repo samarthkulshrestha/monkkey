@@ -1,0 +1,4 @@
+passwordgenerator==1.4
+pycryptodome==3.11.0
+pyperclip==1.8.2
+scrypt==0.8.18
